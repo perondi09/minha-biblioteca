@@ -22,9 +22,9 @@ public class UsuarioModel {
     private UUID id;
 
     @Column(unique = true, nullable = false)
-    private String nome;
+    private String username;
 
     @Column(nullable = false)
-    private String senha;
+    private String password;
 
 }
