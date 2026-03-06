@@ -2,7 +2,6 @@ package com.perondi.minha_biblioteca.service;
 
 import com.perondi.minha_biblioteca.model.UsuarioModel;
 import com.perondi.minha_biblioteca.repository.UsuarioRepository;
-import io.jsonwebtoken.security.Password;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,14 +19,16 @@ public class UsuarioService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public UsuarioModel RegistrarUsuario(String nome, String senha) {
-       String senhaCriptografada = passwordEncoder.encode(senha);
-       UsuarioModel usuarioModel = new UsuarioModel();
-       return usuarioRepository.save(usuarioModel);
+    public UsuarioModel registrarUsuario(String username, String password) {
+        String senhaCriptografada = passwordEncoder.encode(password);
+        UsuarioModel usuario = new UsuarioModel();
+        usuario.setUsername(username);
+        usuario.setPassword(senhaCriptografada);
+        return usuarioRepository.save(usuario);
     }
 
-    public Optional<UsuarioModel> BuscarPorNome(String nome, String senha) {
-        return usuarioRepository .findByNome(nome);
+    public Optional<UsuarioModel> buscarPorUsername(String username) {
+        return usuarioRepository.findByUsername(username);
     }
 
 }

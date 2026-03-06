@@ -1,30 +1,39 @@
 package com.perondi.minha_biblioteca.security;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
+import java.util.Date;
 
 public class JwtUtil {
 
-    public static final Key JWT_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long JWT_EXPIRATION = 3600000; // 1 hora
+    private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final long EXPIRATION_TIME = 86400000;
 
-    public static String gerarToken(String nome) {
-        long now = System.currentTimeMillis();
-        return io.jsonwebtoken.Jwts.builder()
-                .setSubject(nome)
-                .setIssuedAt(new java.util.Date(now))
-                .setExpiration(new java.util.Date(now + JWT_EXPIRATION))
-                .signWith(JWT_KEY)
+    public static String generateToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public static String exctractUsername(String token) {
-        return Jwts.parser().setSigningKey(JWT_KEY).build()
-                .parseClaimsJws(token)
-                .getBosdy()
-                .getSubject();
+    public static String extractUsername(String token) {
+        return Jwts.parser().setSigningKey(key).build()
+                .parseClaimsJws(token).getBody().getSubject();
     }
+
+    public static boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        }
+        catch(JwtException e) {
+            return false;
+        }
+    }
+
 }
